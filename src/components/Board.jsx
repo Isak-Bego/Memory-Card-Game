@@ -1,17 +1,6 @@
 import { useState, useEffect } from "react";
-
-function CatCards({data}){
-    return(
-        data.map((gif) => {
-            return(
-                <div key={gif.id}>
-                    <img src={gif.url} alt="cat image" />
-                </div>
-            );
-        })
-    );
-}
-
+import "../styles/Board.css";
+import CatCards from "./CatCards";
 
 function Board() {
   let [loading, setLoading] = useState(true);
@@ -23,39 +12,53 @@ function Board() {
     if (loading === true) {
       fetch(
         `https://api.giphy.com/v1/gifs/search?api_key=ER6SlfHtzBR9LuE7rxKksuGjI0KVrDp3&q=cats&limit=30`,
-        {mode: "cors"}
+        { mode: "cors" }
       )
         .then((Response) => Response.json())
         .then((Response) => {
-            setContent({success:true, data: Response.data.map((gif)=> ({id: gif.id, url: gif.images.original.url})
-            )});
+          setContent({
+            success: true,
+            score: 0,
+            highScore: localStorage.getItem("highScore")
+            ? localStorage.getItem("highScore")
+            : 0,
+            data: Response.data.map((gif) => ({
+              id: gif.id,
+              url: gif.images.original.url,
+            })),
+          });
         })
         .catch((error) => {
-            setContent({success:false, data: error});
+          setContent({ success: false, data: error });
         });
 
-        setLoading(false);
-
-    } 
+      setLoading(false);
+    }
   }, [loading]);
 
-
-  if(loading){
-    return(
-        <div>Loading...</div>
-    );
-  }else if(content.success === true){
-    return(
-        <div className="Master">
-            <CatCards data={content.data}/>
-        </div>
-    )
-  }else if(content.success === false){
+  if (loading) {
+    return <div>Loading...</div>;
+  } else if (content.success === true) {
     return (
-        <div>An error occurred...</div>
+      <>
+        
+        <div className="Master">
+            <div className="scoreBoard">
+                <h3>Score: {content.score}</h3>
+                <br />
+                <h3>High Score: {content.highScore}</h3>
+            </div>
+          <CatCards
+            contentData={content}
+            setContentData={setContent}
+            setLoadingData={setLoading}
+          />
+        </div>
+      </>
     );
+  } else if (content.success === false) {
+    return <div>An error occurred...</div>;
   }
-
 }
 
 export default Board;
