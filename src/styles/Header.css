@@ -1,0 +1,14 @@
+.header{
+    display: flex; 
+    justify-content: center;
+}
+
+
+.logoContainer{
+    object-fit: fill;
+    width: 300px; 
+}
+
+.logoContainer img{
+    width: 100%; 
+}
